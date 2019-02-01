@@ -3,6 +3,8 @@ i=0
 while true; do
     PODS=`kubectl get pods`
     HPA=`kubectl get hpa`
+    NODE=`kubectl top node`
+    POD=`kubectl top pod`
     clear && printf "\033c"
     echo "******************************************************************************"
     echo "                                    PODS                                      "
