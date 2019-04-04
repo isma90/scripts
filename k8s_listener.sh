@@ -1,20 +1,45 @@
 #!/bin/bash
+
+while getopts ":n:" opt; do
+  case $opt in
+    n)
+        namespace="$OPTARG"
+        echo "namespace " $namespace
+        PODS=`kubectl get pods --namespace $namespace`
+        NODE=`kubectl top node`
+        POD=`kubectl top pod --namespace $namespace`
+    ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
+
+
+function getMetrics () {
+    if [ -z ${namespace+x} ]; then
+        PODS=`kubectl get pods --namespace default`
+        NODE=`kubectl top node`
+        POD=`kubectl top pod --namespace default`
+    fi    
+}
+
 i=0
 while true; do
-    PODS=`kubectl get pods`
-    HPA=`kubectl get hpa`
-    NODE=`kubectl top node`
-    POD=`kubectl top pod`
+    getMetrics
     clear && printf "\033c"
     echo "******************************************************************************"
     echo "                                    PODS                                      "
     echo "******************************************************************************"
     echo "$PODS"
     echo "********************************************************************************************************"
-    echo "                                       Horizontal Pod Autoscaler                                        "
+    echo "                                       TOP POD                                       "
     echo "********************************************************************************************************"
-    echo "$HPA"
+    echo "$POD"
+    echo "********************************************************************************************************"
+    echo "                                       TOP NODE                                       "
+    echo "********************************************************************************************************"
+    echo "$NODE"
     i=$((i + 1))
     echo $i
-    sleep 2s
+    sleep 5s
 done
